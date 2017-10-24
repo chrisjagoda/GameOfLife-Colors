@@ -16,19 +16,21 @@ export class GameOfLife {
 	private cell_array: Cell[][];
 	private display: GameDisplay;
 
+	public dark: boolean;
 	public evolved: boolean;
 	public interval: number;
 
-	constructor(init_cells: number[][], cell_width?: number, cell_height?: number, canvas_id?: string, colors?: Colors, evolved?: boolean) {
+	constructor(init_cells: number[][], cell_width?: number, cell_height?: number, canvas_id?: string, colors?: Colors, evolved?: boolean, dark?: boolean) {
 		this.num_cells_y = init_cells.length;
 		this.num_cells_x = init_cells[0].length || 0;
 		this.cell_width = cell_width || 5;
 		this.cell_height = cell_height || 5;
 		this.canvas_id = canvas_id || "life";
 		this.colors = colors || <Colors>{red: true, green: true, blue: true};
+		this.dark = dark || false;
 		this.evolved = evolved || false;
 		this.cell_array = [];
-		this.display = new GameDisplay(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id);
+		this.display = new GameDisplay(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id, dark);
 		this.interval = null; // initial interval to null. Set when setInterval called on step
 
 		// Convert init_cells array of 0s and 1s to Cell objects for each row
@@ -181,8 +183,9 @@ class GameDisplay {
 	private num_cells_y: number;
 	private cell_width: number;
 	private cell_height: number;
+	private dark: boolean;
 
-	constructor(num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, canvas_id: string) {
+	constructor(num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, canvas_id: string, dark: boolean) {
 		this.canvas = <HTMLCanvasElement>document.getElementById(canvas_id);
 		this.ctx = this.canvas.getContext && this.canvas.getContext('2d');
 		this.width_pixels = num_cells_x * cell_width;
@@ -191,6 +194,11 @@ class GameDisplay {
 		this.cell_height = cell_height;
         this.canvas.width = this.width_pixels;
         this.canvas.height = this.height_pixels;
+        this.dark = dark;
+        if (dark) {
+        	this.ctx.fillStyle = "rgba(0,0,0,1)";
+			this.ctx.fillRect(0, 0, this.width_pixels, this.height_pixels);
+        }
 	}
 
 	/**
@@ -225,9 +233,15 @@ class GameDisplay {
 			this.ctx.fillStyle = "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + cell.color.a + ")";
 			this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
 		} else {
-			this.ctx.clearRect(start_x, start_y, this.cell_width, this.cell_height);
+			if (this.dark) {
+        		this.ctx.fillStyle = "rgba(0,0,0,1)";
+				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
+			} else {
+				this.ctx.clearRect(start_x, start_y, this.cell_width, this.cell_height);
+			}
 			if (cell.color) {
-				this.ctx.fillStyle = "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + 0.1 + ")";
+				this.ctx.fillStyle = "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + 0.1  + ")";
+				this.ctx.fillStyle = "rgba(" + cell.color.r/9 + "," + cell.color.g/9 + "," + cell.color.b/9 + "," + 1 + ")";
 				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
 			}
 		}
