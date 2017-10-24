@@ -240,8 +240,8 @@ class GameDisplay {
 				this.ctx.clearRect(start_x, start_y, this.cell_width, this.cell_height);
 			}
 			if (cell.color) {
-				this.ctx.fillStyle = "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + 0.1  + ")";
-				this.ctx.fillStyle = "rgba(" + cell.color.r/9 + "," + cell.color.g/9 + "," + cell.color.b/9 + "," + 1 + ")";
+				this.ctx.fillStyle = (this.dark) ? "rgba(" + Math.floor(cell.color.r/8) + "," + Math.floor(cell.color.g/8) + "," + Math.floor(cell.color.b/8) + "," + 0.9 + ")":
+												   "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + 0.1  + ")";
 				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
 			}
 		}
