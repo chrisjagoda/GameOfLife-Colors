@@ -41,6 +41,10 @@ var cells: number[][];
 var game: GameOfLife;
 
 function createNewGame() {
+  if (game) {
+    clearInterval(game.interval);
+    game.interval = null;
+  }
   cells = genCells(cell_width, cell_height, canvas_width, canvas_height, frequency);
   game = new GameOfLife(cells, cell_width, cell_height, "life", colors);
   game.interval = setInterval(function () { game.step(); }, 100);

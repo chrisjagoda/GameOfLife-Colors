@@ -1,4 +1,3 @@
-
 /**
  * The Game of Life object
  * @param {number[][]} init_cells the initial array of cells
@@ -8,16 +7,17 @@
  * @param {string} the id of the canvas element
  */
 export class GameOfLife {
-	num_cells_y: number;
-	num_cells_x: number;
-	cell_width: number;
-	cell_height: number;
-	canvas_id: string;
-	colors: Colors;
-	evolved: boolean;
-	cell_array: Cell[][];
-	display: GameDisplay;
-	interval: number;
+	private num_cells_y: number;
+	private num_cells_x: number;
+	private cell_width: number;
+	private cell_height: number;
+	private canvas_id: string;
+	private colors: Colors;
+	private cell_array: Cell[][];
+	private display: GameDisplay;
+
+	public evolved: boolean;
+	public interval: number;
 
 	constructor(init_cells: number[][], cell_width?: number, cell_height?: number, canvas_id?: string, colors?: Colors, evolved?: boolean) {
 		this.num_cells_y = init_cells.length;
@@ -173,14 +173,14 @@ export class GameOfLife {
  * @param {string} the id of the canvas element
  */
 class GameDisplay {
-	canvas: HTMLCanvasElement;
-	ctx: CanvasRenderingContext2D;
-	width_pixels: number;
-	height_pixels: number;
-	num_cells_x: number;
-	num_cells_y: number;
-	cell_width: number;
-	cell_height: number;
+	private canvas: HTMLCanvasElement;
+	private ctx: CanvasRenderingContext2D;
+	private width_pixels: number;
+	private height_pixels: number;
+	private num_cells_x: number;
+	private num_cells_y: number;
+	private cell_width: number;
+	private cell_height: number;
 
 	constructor(num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, canvas_id: string) {
 		this.canvas = <HTMLCanvasElement>document.getElementById(canvas_id);
