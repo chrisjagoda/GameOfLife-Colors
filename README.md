@@ -1,4 +1,7 @@
-# Game of Life #
+# Conway's Game of Life #
+
+An implementation of Conway's Game of Life with a twist, involving phenotypes in the form of color, that are randomly passed down from two parents picked randomly from the neighbors of the cell.
+
 
 ## Directions to Run ##
 
@@ -22,7 +25,7 @@ Either enter the following command
 node node_modules/typescript/bin/tsc.js
 ```
 
-or use the `tsc` script from our `package.json` with
+**or** use the `tsc` script from our `package.json` with
 
 ```shell
 npm run tsc
@@ -36,7 +39,7 @@ Either enter the following command
 browserify src/app.js -o bundle.js -s app
 ```
 
-or use the `browserify` script from our `package.json` with
+**or** use the `browserify` script from our `package.json` with
 
 ```shell
 npm run browserify
@@ -51,7 +54,7 @@ Either enter the following command
 node node_modules/http-server/bin/http-server -o
 ```
 
-or use the `listen` script from our `package.json` with
+**or** use the `listen` script from our `package.json` with
 
 ```
 npm run listen
@@ -60,7 +63,7 @@ npm run listen
 By default http-server listens on port `8080`.
 If this port is taken, use '-p ####' to specify a free port, where `####` is the available port.
 
-**Shortcut for running all steps in a batch**
+## Shortcut for running all steps in a batch ##
 
 ```
 npm run all
