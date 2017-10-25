@@ -1,6 +1,9 @@
 # Conway's Game of Life #
 
-An implementation of Conway's Game of Life with a twist, involving phenotypes in the form of color, that are randomly passed down from two parents picked randomly from the neighbors of the cell.
+An implementation of Conway's Game of Life with a twist involving phenotypes in the form of color.
+Colors are randomly passed down from two parents picked randomly from the neighbors of each cell with each cell posession only one color.
+Dark/Light modes and switching cell colors on and off are included in the example.
+An optional parameter, evolve, is also supported which increases reproduction of the cells creating different patterns.
 
 
 ## Directions to Run ##
