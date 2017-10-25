@@ -1,10 +1,5 @@
 /**
  * The Game of Life object
- * @param {number[][]} init_cells the initial array of cells
- * @param {number} num_cells_y the number of cells along the y axis
- * @param {number} cell_width the cell width
- * @param {number} cell_height the cell height
- * @param {string} the id of the canvas element
  */
 export class GameOfLife {
 	private num_cells_y: number;
@@ -15,11 +10,18 @@ export class GameOfLife {
 	private colors: Colors;
 	private cell_array: Cell[][];
 	private display: GameDisplay;
-
 	public dark: boolean;
 	public evolved: boolean;
 	public interval: number;
 
+	/**
+	 * Game of Life object constructor
+	 * @param {number[][]} init_cells the initial array of cells
+	 * @param {number} num_cells_y the number of cells along the y axis
+	 * @param {number} cell_width the cell width
+	 * @param {number} cell_height the cell height
+	 * @param {string} the id of the canvas element
+	 */
 	constructor(init_cells: number[][], cell_width?: number, cell_height?: number, canvas_id?: string, colors?: Colors, evolved?: boolean, dark?: boolean) {
 		this.num_cells_y = init_cells.length;
 		this.num_cells_x = init_cells[0].length || 0;
@@ -40,11 +42,11 @@ export class GameOfLife {
 			// each column in rows
 			for (var x = 0; x < this.num_cells_x; x++) {
 				let alive: boolean = (init_cells[y][x] === 1);
-				let color: RGB = (alive) ? <RGB>{r: (this.colors["red"]) ? Math.floor(Math.random()*256): 0,
-							    				 g: (this.colors["green"]) ? Math.floor(Math.random()*256): 0,
-							    				 b: (this.colors["blue"]) ? Math.floor(Math.random()*256): 0,
-							    				 a: Math.random() * (0.75 - 0.25) + 0.25 // rand between 0.25 and 0.75
-							    				}: null;
+				let color: RGBA = (alive) ? <RGBA>{r: (this.colors["red"]) ? Math.floor(Math.random()*256): 0,
+							    				   g: (this.colors["green"]) ? Math.floor(Math.random()*256): 0,
+							    				   b: (this.colors["blue"]) ? Math.floor(Math.random()*256): 0,
+							    				   a: Math.random() * (0.75 - 0.25) + 0.25 // rand between 0.25 and 0.75
+							    				  }: null;
 				this.cell_array[y].push(<Cell>{x_pos: x, y_pos: y, alive: alive, color: color});
 			}
         }
@@ -53,7 +55,7 @@ export class GameOfLife {
 
 	/**
 	 * Calculates and returns the next gen of cells according to the rules of life
-	 * @returns {Cell[][]} The next generation of cells
+	 * @return {Cell[][]} The next generation of cells
 	 */
 	public nextGenCells(): Cell[][] {
 		var current_gen: Cell[][] = this.cell_array;
@@ -88,16 +90,16 @@ export class GameOfLife {
 				var alive_count: number = 0;
 				var dead_count: number = 0;
 
-				var neighbor_colors: RGB[] = [];
+				var neighbor_colors: RGBA[] = [];
 				let self = this;
 				neighbors.forEach(function (neighbor) {
 					if (neighbor.alive) {
 				    	alive_count++;
 				    	if (self.colors && neighbor.color) {
-					    	neighbor_colors.push(<RGB>{r: neighbor.color.r,
-										    	  	   g: neighbor.color.g,
-										    	       b: neighbor.color.b,
-										    	  	   a: neighbor.color.a});
+					    	neighbor_colors.push(<RGBA>{r: neighbor.color.r,
+										    	  		g: neighbor.color.g,
+										    	    	b: neighbor.color.b,
+										    	  		a: neighbor.color.a});
 				    	}
 					}
 					else {
@@ -137,8 +139,8 @@ export class GameOfLife {
 					}
 				}
 
-				var parent_colors: RGB[];
-				var child_color: RGB;
+				var parent_colors: RGBA[];
+				var child_color: RGBA;
 				if (is_alive) {
 					if (cell.color) { // if colors exist - create child color from two random neighbors - or parents
 						neighbor_colors.push(cell.color);
@@ -150,7 +152,7 @@ export class GameOfLife {
 					child_color = parent_colors[Math.floor(Math.random()*parent_colors.length)];
 				}
 				// create new cell based on color from neighbors dead cell color null
-				let cell_color: RGB = (is_alive) ? child_color: cell.color;
+				let cell_color: RGBA = (is_alive) ? child_color: cell.color;
 				next_gen[y].push(<Cell>{x_pos: x, y_pos: y, alive: is_alive, color: cell_color});
 			}
 		}
@@ -168,23 +170,26 @@ export class GameOfLife {
 }
 
 /**
- * The game display
- * @param {number} num_cells_x the number of cells along the x axis
- * @param {number} num_cells_y the number of cells along the y axis
- * @param {number} cell_width the cell width
- * @param {number} cell_height the cell height
- * @param {string} the id of the canvas element
+ * The game display object
  */
-class GameDisplay {
+abstract class GameDisplay {
 	private canvas: HTMLCanvasElement;
+	private num_cells_x: number;
+	private num_cells_y: number;
 	public ctx: CanvasRenderingContext2D;
 	public width_pixels: number;
 	public height_pixels: number;
-	private num_cells_x: number;
-	private num_cells_y: number;
 	public cell_width: number;
 	public cell_height: number;
 
+	/**
+	 * Game display constructor
+	 * @param {number} num_cells_x the number of cells along the x axis
+	 * @param {number} num_cells_y the number of cells along the y axis
+	 * @param {number} cell_width the cell width
+	 * @param {number} cell_height the cell height
+	 * @param {string} the id of the canvas element
+	 */
 	constructor(num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, canvas_id: string) {
 		this.canvas = <HTMLCanvasElement>document.getElementById(canvas_id);
 		this.ctx = this.canvas.getContext && this.canvas.getContext('2d');
@@ -195,44 +200,18 @@ class GameDisplay {
         this.canvas.width = this.width_pixels;
         this.canvas.height = this.height_pixels;
 	}
-
-	public updateCells(cell_array: Cell[][]): void { }
-}
-
-class GameDisplayDark extends GameDisplay {
-	constructor(num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, canvas_id: string) {
-    	super(num_cells_x, num_cells_y, cell_width, cell_height, canvas_id);
-    	this.ctx.fillStyle = "rgba(0,0,0,1)";
-		this.ctx.fillRect(0, 0, this.width_pixels, this.height_pixels);
-	}
     
 	/**
 	 * Draws or clears a single cell
 	 * @param {Cell} cell the cell to be drawn
 	 */
-	private drawCell(cell: Cell): void {
-		// find start point (top left)
-		var start_x: number = cell.x_pos * this.cell_width;
-		var start_y: number = cell.y_pos * this.cell_height;
-		// draw rectangle from that point, to bottom right point by adding cell_width/cell_height
-		if (cell.alive) {
-			this.ctx.fillStyle = "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + cell.color.a + ")";
-			this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
-		} else {
-        		this.ctx.fillStyle = "rgba(0,0,0,1)";
-				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
-			if (cell.color) {
-				this.ctx.fillStyle = "rgba(" + Math.floor(cell.color.r/8) + "," + Math.floor(cell.color.g/8) + "," + Math.floor(cell.color.b/8) + "," + 0.9 + ")";
-				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
-			}
-		}
-	}
+	public drawCell(cell: Cell): void { }
 
 	/**
 	 * Updates all cells on board from previous generation to next
 	 * @param {Cell[][]} cell_array the 2D array of cells to be updated
 	 */
-	public updateCells(cell_array: Cell[][]): void {
+	public updateCells(cell_array: Cell[][]): void {		
 		var length_y: number = cell_array.length;
 		var length_x: number = cell_array[0].length || 0;
 		var y: number;
@@ -248,67 +227,95 @@ class GameDisplayDark extends GameDisplay {
 	}
 }
 
+/**
+ * Dark version of game display object
+ */
+class GameDisplayDark extends GameDisplay {
+	constructor(num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, canvas_id: string) {
+    	super(num_cells_x, num_cells_y, cell_width, cell_height, canvas_id);
+    	this.ctx.fillStyle = "RGBa(0,0,0,1)";
+		this.ctx.fillRect(0, 0, this.width_pixels, this.height_pixels);
+	}
 
+	public drawCell(cell: Cell): void {
+		// find start point (top left)
+		var start_x: number = cell.x_pos * this.cell_width;
+		var start_y: number = cell.y_pos * this.cell_height;
+		// draw rectangle from that point, to bottom right point by adding cell_width/cell_height
+		if (cell.alive) {
+			this.ctx.fillStyle = "RGBa(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + cell.color.a + ")";
+			this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
+		} else {
+        		this.ctx.fillStyle = "RGBa(0,0,0,1)";
+				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
+			if (cell.color) {
+				this.ctx.fillStyle = "RGBa(" + Math.floor(cell.color.r/7) + "," + Math.floor(cell.color.g/7) + "," + Math.floor(cell.color.b/7) + "," + 1 + ")";
+				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
+			}
+		}
+	}
+}
+
+/**
+ * Light version of game display object
+ */
 class GameDisplayLight extends GameDisplay {
 	constructor(num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, canvas_id: string) {
     	super(num_cells_x, num_cells_y, cell_width, cell_height, canvas_id);
 	}
     
-	/**
-	 * Draws or clears a single cell
-	 * @param {Cell} cell the cell to be drawn
-	 */
-	private drawCell(cell: Cell): void {
+	public drawCell(cell: Cell): void {
 		// find start point (top left)
 		var start_x: number = cell.x_pos * this.cell_width;
 		var start_y: number = cell.y_pos * this.cell_height;
 		// draw rectangle from that point, to bottom right point by adding cell_width/cell_height
 		if (cell.alive) {
-			this.ctx.fillStyle = "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + cell.color.a + ")";
+			this.ctx.fillStyle = "RGBa(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + cell.color.a + ")";
 			this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
 		} else {
 			this.ctx.clearRect(start_x, start_y, this.cell_width, this.cell_height);
 			if (cell.color) {
-				this.ctx.fillStyle = "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + 0.1 + ")";
+				this.ctx.fillStyle = "RGBa(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + 0.1 + ")";
 				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
 			}
 		}
 	}
-
-	/**
-	 * Updates all cells on board from previous generation to next
-	 * @param {Cell[][]} cell_array the 2D array of cells to be updated
-	 */
-	public updateCells(cell_array: Cell[][]): void {
-		var length_y: number = cell_array.length;
-		var length_x: number = cell_array[0].length || 0;
-		var y: number;
-		var x: number;
-		// each row
-		for (y = 0; y < length_y; y++) {
-			// each column in rows
-			for (x = 0; x < length_x; x++) {
-				// Draw Cell on Canvas
-				this.drawCell(cell_array[y][x]);
-			}
-		}
-	}
 }
 
+/**
+ * Represents a living or dead cell
+ * @param {x_pos} x_pos the x position of the cell
+ * @param {y_pos} y_pos the y position of the cell
+ * @param {alive} alive if the cell is alive or dead
+ * @param {color} color the RGBA color value of the cell
+ */
 interface Cell {
 	x_pos: number;
 	y_pos: number;
 	alive: boolean;
-	color: RGB;
+	color: RGBA;
 }
 
-interface RGB {
+/**
+ * RGBA value
+ * @param {number} r the red value (0 - 256)
+ * @param {number} g the green value (0 - 256)
+ * @param {number} b the blue value (0 - 256)
+ * @param {number} a the alpha value (0 - 1)
+ */
+interface RGBA {
 	r: number;
 	g: number;
 	b: number;
 	a: number;
 }
 
+/**
+ * The colors a new board of cells may have
+ * @param {boolean} red if red is allowed
+ * @param {boolean} green if green is allowed
+ * @param {boolean} blue if blue is allowed
+ */
 export interface Colors {
 	red: boolean;
 	green: boolean;
