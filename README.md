@@ -2,7 +2,7 @@
 
 An implementation of Conway's Game of Life with a twist involving phenotypes in the form of color.
 
-Colors are randomly passed down from two parents picked randomly from the neighbors of each cell with each cell posession only one color.
+Color are randomly assigned to each living cell on game initialization and passed down to the next generation from two parents picked randomly from the living neighbors of each cell with an equal chance for the child cell to posess either parents' color.
 
 Dark/Light modes and switching cell colors on and off are included in the example.
 
