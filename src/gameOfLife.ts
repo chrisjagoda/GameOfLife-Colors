@@ -30,7 +30,8 @@ export class GameOfLife {
 		this.dark = dark || false;
 		this.evolved = evolved || false;
 		this.cell_array = [];
-		this.display = new GameDisplay(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id, dark);
+		this.display = (dark) ? new GameDisplayDark(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id):
+								new GameDisplayLight(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id);
 		this.interval = null; // initial interval to null. Set when setInterval called on step
 
 		// Convert init_cells array of 0s and 1s to Cell objects for each row
@@ -176,16 +177,15 @@ export class GameOfLife {
  */
 class GameDisplay {
 	private canvas: HTMLCanvasElement;
-	private ctx: CanvasRenderingContext2D;
-	private width_pixels: number;
-	private height_pixels: number;
+	public ctx: CanvasRenderingContext2D;
+	public width_pixels: number;
+	public height_pixels: number;
 	private num_cells_x: number;
 	private num_cells_y: number;
-	private cell_width: number;
-	private cell_height: number;
-	private dark: boolean;
+	public cell_width: number;
+	public cell_height: number;
 
-	constructor(num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, canvas_id: string, dark: boolean) {
+	constructor(num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, canvas_id: string) {
 		this.canvas = <HTMLCanvasElement>document.getElementById(canvas_id);
 		this.ctx = this.canvas.getContext && this.canvas.getContext('2d');
 		this.width_pixels = num_cells_x * cell_width;
@@ -194,11 +194,38 @@ class GameDisplay {
 		this.cell_height = cell_height;
         this.canvas.width = this.width_pixels;
         this.canvas.height = this.height_pixels;
-        this.dark = dark;
-        if (dark) {
-        	this.ctx.fillStyle = "rgba(0,0,0,1)";
-			this.ctx.fillRect(0, 0, this.width_pixels, this.height_pixels);
-        }
+	}
+
+	public updateCells(cell_array: Cell[][]): void { }
+}
+
+class GameDisplayDark extends GameDisplay {
+	constructor(num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, canvas_id: string) {
+    	super(num_cells_x, num_cells_y, cell_width, cell_height, canvas_id);
+    	this.ctx.fillStyle = "rgba(0,0,0,1)";
+		this.ctx.fillRect(0, 0, this.width_pixels, this.height_pixels);
+	}
+    
+	/**
+	 * Draws or clears a single cell
+	 * @param {Cell} cell the cell to be drawn
+	 */
+	private drawCell(cell: Cell): void {
+		// find start point (top left)
+		var start_x: number = cell.x_pos * this.cell_width;
+		var start_y: number = cell.y_pos * this.cell_height;
+		// draw rectangle from that point, to bottom right point by adding cell_width/cell_height
+		if (cell.alive) {
+			this.ctx.fillStyle = "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + cell.color.a + ")";
+			this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
+		} else {
+        		this.ctx.fillStyle = "rgba(0,0,0,1)";
+				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
+			if (cell.color) {
+				this.ctx.fillStyle = "rgba(" + Math.floor(cell.color.r/8) + "," + Math.floor(cell.color.g/8) + "," + Math.floor(cell.color.b/8) + "," + 0.9 + ")";
+				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
+			}
+		}
 	}
 
 	/**
@@ -219,7 +246,14 @@ class GameDisplay {
 			}
 		}
 	}
+}
 
+
+class GameDisplayLight extends GameDisplay {
+	constructor(num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, canvas_id: string) {
+    	super(num_cells_x, num_cells_y, cell_width, cell_height, canvas_id);
+	}
+    
 	/**
 	 * Draws or clears a single cell
 	 * @param {Cell} cell the cell to be drawn
@@ -233,16 +267,29 @@ class GameDisplay {
 			this.ctx.fillStyle = "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + cell.color.a + ")";
 			this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
 		} else {
-			if (this.dark) {
-        		this.ctx.fillStyle = "rgba(0,0,0,1)";
-				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
-			} else {
-				this.ctx.clearRect(start_x, start_y, this.cell_width, this.cell_height);
-			}
+			this.ctx.clearRect(start_x, start_y, this.cell_width, this.cell_height);
 			if (cell.color) {
-				this.ctx.fillStyle = (this.dark) ? "rgba(" + Math.floor(cell.color.r/8) + "," + Math.floor(cell.color.g/8) + "," + Math.floor(cell.color.b/8) + "," + 0.9 + ")":
-												   "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + 0.1  + ")";
+				this.ctx.fillStyle = "rgba(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + 0.1 + ")";
 				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
+			}
+		}
+	}
+
+	/**
+	 * Updates all cells on board from previous generation to next
+	 * @param {Cell[][]} cell_array the 2D array of cells to be updated
+	 */
+	public updateCells(cell_array: Cell[][]): void {
+		var length_y: number = cell_array.length;
+		var length_x: number = cell_array[0].length || 0;
+		var y: number;
+		var x: number;
+		// each row
+		for (y = 0; y < length_y; y++) {
+			// each column in rows
+			for (x = 0; x < length_x; x++) {
+				// Draw Cell on Canvas
+				this.drawCell(cell_array[y][x]);
 			}
 		}
 	}
