@@ -1,4 +1,5 @@
-import { GameOfLife, Colors } from './gameOfLife';
+import { GoLColors } from './gameOfLife';
+import { Colors } from './types';
 
 function genCells(cell_size_x: number, cell_size_y: number, canvas_width?: number, canvas_height?: number, frequency?: number): number[][] {
   var width: number = canvas_width ||
@@ -40,14 +41,14 @@ var evolved: boolean = false;
 var dark: boolean = true;
 
 var cells: number[][];
-var game: GameOfLife;
+var game: GoLColors.GameOfLife;
 
 function createNewGame() {
   if (game) {
     clearInterval(game.interval);
   }
   cells = genCells(cell_width, cell_height, canvas_width, canvas_height, frequency);
-  game = new GameOfLife(cells, cell_width, cell_height, "life", colors, evolved, dark);
+  game = new GoLColors.GameOfLife(cells, cell_width, cell_height, "life", colors, evolved, dark);
   game.interval = setInterval(function () { game.step(); }, 100);
 }
 
