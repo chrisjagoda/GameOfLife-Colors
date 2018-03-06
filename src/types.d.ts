@@ -14,9 +14,9 @@ export interface Cell {
 
 /**
  * RGBA value
- * @param {number} r the red value (0 - 256)
- * @param {number} g the green value (0 - 256)
- * @param {number} b the blue value (0 - 256)
+ * @param {number} r the red value (0 - 255)
+ * @param {number} g the green value (0 - 255)
+ * @param {number} b the blue value (0 - 255)
  * @param {number} a the alpha value (0 - 1)
  */
 export interface RGBA {
