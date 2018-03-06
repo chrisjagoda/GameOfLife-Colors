@@ -75,8 +75,8 @@ export class GameDisplayDark extends GameDisplay {
 			this.ctx.fillStyle = "RGBa(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + cell.color.a + ")";
 			this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
 		} else {
-				this.ctx.fillStyle = "RGBa(0,0,0,1)";
-				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
+			this.ctx.fillStyle = "RGBa(0,0,0,1)";
+			this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
 			if (cell.color) {
 				this.ctx.fillStyle = "RGBa(" + Math.floor(cell.color.r/7) + "," + Math.floor(cell.color.g/7) + "," + Math.floor(cell.color.b/7) + "," + 1 + ")";
 				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
