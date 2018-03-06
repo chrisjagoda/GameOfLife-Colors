@@ -47,11 +47,12 @@ export namespace GoLColors {
 				for (var x = 0; x < this.num_cells_x; x++) {
 					let alive: boolean = (init_cells[y][x] === 1);
 					// assign a color if cell is alive
-					let color: RGBA = (alive) ? <RGBA>{r: (this.colors["red"]) ? Math.floor(Math.random()*256): 0,
-								    				   g: (this.colors["green"]) ? Math.floor(Math.random()*256): 0,
-								    				   b: (this.colors["blue"]) ? Math.floor(Math.random()*256): 0,
-								    				   a: Math.random() * (0.75 - 0.25) + 0.25 // rand between 0.25 and 0.75
-								    				  }: null;
+					let color: RGBA = (alive) ? <RGBA>{
+						r: (this.colors["red"]) ? Math.floor(Math.random()*256): 0,
+						g: (this.colors["green"]) ? Math.floor(Math.random()*256): 0,
+						b: (this.colors["blue"]) ? Math.floor(Math.random()*256): 0,
+						a: Math.random() * (0.75 - 0.25) + 0.25 // rand between 0.25 and 0.75
+					}: null;
 					this.cell_array[y].push(<Cell>{x_pos: x, y_pos: y, alive: alive, color: color});
 				}
 			}
@@ -101,10 +102,11 @@ export namespace GoLColors {
 						if (neighbor.alive) {
 							alive_count++;
 							if (self.colors && neighbor.color) {
-								neighbor_colors.push(<RGBA>{r: neighbor.color.r,
-															g: neighbor.color.g,
-															b: neighbor.color.b,
-															a: neighbor.color.a});
+								neighbor_colors.push(<RGBA>{
+									r: neighbor.color.r,
+									g: neighbor.color.g,
+									b: neighbor.color.b,
+									a: neighbor.color.a});
 							}
 						}
 						else {
