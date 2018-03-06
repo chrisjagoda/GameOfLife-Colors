@@ -1,0 +1,7 @@
+# Visual Studio 2017 cache/options directory
+.vs/
+bower_components/
+node_modules/
+*.yml
+*.log
+*.js
