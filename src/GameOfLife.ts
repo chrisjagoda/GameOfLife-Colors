@@ -36,7 +36,7 @@ export class GameOfLife {
 		this.evolved = evolved || false;
 		this.cell_array = [];
 		this.display = (dark) ? new GameDisplayDark(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id):
-								new GameDisplayLight(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id);
+					new GameDisplayLight(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id);
 		this.interval = 0; // initial interval set to 0. Set when setInterval called on step
 
 		// Convert init_cells array of 0s and 1s to Cell objects for each row
