@@ -28,17 +28,15 @@ document.getElementById("start").addEventListener("click", e => createNewGame())
 document.getElementById("red").addEventListener("change", e => toggleColor("red"));
 document.getElementById("green").addEventListener("change", e => toggleColor("green"));
 document.getElementById("blue").addEventListener("change", e => toggleColor("blue"));
-document.getElementById("dark").addEventListener("change", e => toggleDark());
 document.getElementById("evolve").addEventListener("click", e => toggleEvolve());
 
 let cell_width: number = 3;
 let cell_height: number = 3;
-let canvas_width: number = null;
-let canvas_height: number = 250;
+let canvas_width: number = 400;
+let canvas_height: number = 400;
 let frequency: number = 0.1;
 let colors: Colors = <Colors>{red: true, green: true, blue: true};
 let evolved: boolean = false;
-let dark: boolean = true;
 
 let cells: number[][];
 let game: GameOfLife;
@@ -48,16 +46,12 @@ function createNewGame() {
     clearInterval(game.interval);
   }
   cells = genCells(cell_width, cell_height, canvas_width, canvas_height, frequency);
-  game = new GameOfLife(cells, cell_width, cell_height, "life", colors, evolved, dark);
+  game = new GameOfLife(cells, cell_width, cell_height, "life", colors, evolved);
   game.interval = setInterval(function () { game.step(); }, 100);
 }
 
 function toggleColor(color: string) {
   colors[color] = !colors[color];
-}
-
-function toggleDark() {
-  dark = !dark;
 }
 
 function toggleEvolve() {

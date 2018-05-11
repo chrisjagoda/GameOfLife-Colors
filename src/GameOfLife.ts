@@ -1,5 +1,5 @@
 import { Cell, Colors, RGBA } from './types';
-import { GameDisplay, GameDisplayDark, GameDisplayLight } from './GameDisplay';
+import { GameDisplay } from './GameDisplay';
 
 /**
  * The Game of Life object
@@ -25,18 +25,16 @@ export class GameOfLife {
 	 * @param {number} cell_height the cell height
 	 * @param {string} the id of the canvas element
 	 */
-	constructor(init_cells: number[][], cell_width?: number, cell_height?: number, canvas_id?: string, colors?: Colors, evolved?: boolean, dark?: boolean) {
+	constructor(init_cells: number[][], cell_width?: number, cell_height?: number, canvas_id?: string, colors?: Colors, evolved?: boolean) {
 		this.num_cells_y = init_cells ? init_cells.length: 0;
 		this.num_cells_x = this.num_cells_y > 0 ? init_cells[0].length: 0;
 		this.cell_width = cell_width || 5;
 		this.cell_height = cell_height || 5;
 		this.canvas_id = canvas_id || "life";
 		this.colors = colors || <Colors>{red: true, green: true, blue: true};
-		this.dark = dark || false;
 		this.evolved = evolved || false;
 		this.cell_array = [];
-		this.display = (dark) ? new GameDisplayDark(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id):
-					new GameDisplayLight(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id);
+		this.display = new GameDisplay(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id);
 		this.interval = 0; // initial interval set to 0. Set when setInterval called on step
 
 		// Convert init_cells array of 0s and 1s to Cell objects for each row
@@ -64,22 +62,27 @@ export class GameOfLife {
 	 */
 	private nextGenCells(): Cell[][] {
 		var current_gen: Cell[][] = this.cell_array;
-		var next_gen: Cell[][] = [];      // New array to hold the next gen cells
 		var length_y: number = this.cell_array.length;
 		var length_x: number = current_gen[0].length || 0;
+		var next_gen: Cell[][] = new Array(length_y);      // New array to hold the next gen cells
 		var x: number;
 		var y: number;
-		// each row
+
+		
 		for (y = 0; y < length_y; y++) {
-			next_gen.push([]); // Init new row
+			next_gen[y] = new Array(length_x); // Init new rows
+		}
+
+		// each row
+		for (y = 0; y < length_y/2; y++) {
 			// each column in rows
-			for (x = 0; x < length_x; x++) {
+			for (x = 0; x < length_x/2; x++) {
 				var cell: Cell = current_gen[y][x];
 				// Calculate above/below/left/right row/column values
-				var row_above: number = (y - 1 >= 0) ? y - 1: length_y - 1; // If current cell is on first row, cell above is the last row
-				var row_below: number = (y + 1 <= length_y - 1) ? y + 1: 0; // If current cell is in last row, then cell below is the first row
-				var column_left: number = (x - 1 >= 0) ? x - 1: length_x - 1; // If current cell is on first row, then left cell is the last row
-				var column_right: number = (x + 1 <= length_x - 1) ? x + 1: 0; // If current cell is on last row, then right cell is in the first row
+				var row_above: number = (y - 1 >= 0) ? y - 1: Math.floor(length_y/2) - 1; // If current cell is on first row, cell above is the last row
+				var row_below: number = (y + 1 <= length_y/2 - 1) ? y + 1: 0; // If current cell is in last row, then cell below is the first row
+				var column_left: number = (x - 1 >= 0) ? x - 1: Math.floor(length_x/2) - 1; // If current cell is on first row, then left cell is the last row
+				var column_right: number = (x + 1 <= length_x/2 - 1) ? x + 1: 0; // If current cell is on last row, then right cell is in the first row
 
 				var neighbors: Cell[] = [
 					current_gen[row_above][column_left], // top left
@@ -155,7 +158,10 @@ export class GameOfLife {
 				}
 				// create new cell based on color from neighbors dead cell color null
 				let cell_color: RGBA = (is_alive) ? child_color: cell.color;
-				next_gen[y].push(<Cell>{x_pos: x, y_pos: y, alive: is_alive, color: cell_color});
+				next_gen[y][x] = <Cell>{x_pos: x, y_pos: y, alive: is_alive, color: cell_color};
+				next_gen[length_y - 1 - y][x] = <Cell>{x_pos: x, y_pos: length_y - 1 - y, alive: is_alive, color: cell_color};
+				next_gen[length_y - 1 - y][length_x - 1 -x] = <Cell>{x_pos: length_x - 1 - x, y_pos: length_y - 1 - y, alive: is_alive, color: cell_color};
+				next_gen[y][length_x - 1 - x] = <Cell>{x_pos: length_x - 1 - x, y_pos: y, alive: is_alive, color: cell_color};
 			}
 		}
 		return next_gen;
