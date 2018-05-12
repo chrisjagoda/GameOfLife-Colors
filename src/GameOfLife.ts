@@ -1,4 +1,4 @@
-import { Cell, Colors, RGBA } from './types';
+import { Cell, Colors, RGBa } from './types';
 import { GameDisplay } from './GameDisplay';
 
 /**
@@ -13,7 +13,6 @@ export class GameOfLife {
 	private colors: Colors;
 	private cell_array: Cell[][];
 	private display: GameDisplay;
-	public dark: boolean;
 	public evolved: boolean;
 	public interval: number;
 
@@ -23,18 +22,18 @@ export class GameOfLife {
 	 * @param {number} num_cells_y the number of cells along the y axis
 	 * @param {number} cell_width the cell width
 	 * @param {number} cell_height the cell height
-	 * @param {string} the id of the canvas element
+	 * @param {string} canvas_id the id of the canvas element
 	 */
-	constructor(init_cells: number[][], cell_width?: number, cell_height?: number, canvas_id?: string, colors?: Colors, evolved?: boolean) {
+	constructor(display: GameDisplay, init_cells: number[][], cell_width?: number, cell_height?: number, colors?: Colors, evolved?: boolean) {
 		this.num_cells_y = init_cells ? init_cells.length: 0;
 		this.num_cells_x = this.num_cells_y > 0 ? init_cells[0].length: 0;
 		this.cell_width = cell_width || 5;
 		this.cell_height = cell_height || 5;
-		this.canvas_id = canvas_id || "life";
 		this.colors = colors || <Colors>{red: true, green: true, blue: true};
+		
 		this.evolved = evolved || false;
 		this.cell_array = [];
-		this.display = new GameDisplay(this.num_cells_x, this.num_cells_y, cell_width, cell_height, canvas_id);
+		this.display = display;
 		this.interval = 0; // initial interval set to 0. Set when setInterval called on step
 
 		// Convert init_cells array of 0s and 1s to Cell objects for each row
@@ -44,7 +43,7 @@ export class GameOfLife {
 			for (var x = 0; x < this.num_cells_x; x++) {
 				let alive: boolean = (init_cells[y][x] === 1);
 				// assign a color if cell is alive
-				let color: RGBA = (alive) ? <RGBA>{
+				let color: RGBa = (alive) ? <RGBa>{
 					r: (this.colors["red"]) ? Math.floor(Math.random()*256): 0,
 					g: (this.colors["green"]) ? Math.floor(Math.random()*256): 0,
 					b: (this.colors["blue"]) ? Math.floor(Math.random()*256): 0,
@@ -96,9 +95,8 @@ export class GameOfLife {
 				];
 
 				var alive_count: number = 0;
-				var dead_count: number = 0;
 
-				var neighbor_colors: RGBA[] = [];
+				var neighbor_colors: RGBa[] = [];
 				let self = this;
 				neighbors.forEach(function (neighbor) {
 					if (neighbor.alive) {
@@ -106,9 +104,6 @@ export class GameOfLife {
 						if (self.colors && neighbor.color) {
 							neighbor_colors.push(neighbor.color);
 						}
-					}
-					else {
-						dead_count++;
 					}
 				});
 
@@ -144,8 +139,8 @@ export class GameOfLife {
 					}
 				}
 
-				var parent_colors: RGBA[];
-				var child_color: RGBA;
+				var parent_colors: RGBa[];
+				var child_color: RGBa;
 				if (is_alive) {
 					if (cell.color) { // if colors exist - create child color from two random neighbors - or parents
 						neighbor_colors.push(cell.color);
@@ -157,11 +152,11 @@ export class GameOfLife {
 					child_color = parent_colors[Math.floor(Math.random()*parent_colors.length)];
 				}
 				// create new cell based on color from neighbors dead cell color null
-				let cell_color: RGBA = (is_alive) ? child_color: cell.color;
-				next_gen[y][x] = <Cell>{x_pos: x, y_pos: y, alive: is_alive, color: cell_color};
-				next_gen[length_y - 1 - y][x] = <Cell>{x_pos: x, y_pos: length_y - 1 - y, alive: is_alive, color: cell_color};
-				next_gen[length_y - 1 - y][length_x - 1 -x] = <Cell>{x_pos: length_x - 1 - x, y_pos: length_y - 1 - y, alive: is_alive, color: cell_color};
-				next_gen[y][length_x - 1 - x] = <Cell>{x_pos: length_x - 1 - x, y_pos: y, alive: is_alive, color: cell_color};
+				let cell_color: RGBa = (is_alive) ? child_color: cell.color;
+				next_gen[y][x] = <Cell>{x_pos: x, y_pos: y, alive: is_alive, color: cell_color}; // top left
+				next_gen[y][length_x - 1 - x] = <Cell>{x_pos: length_x - 1 - x, y_pos: y, alive: is_alive, color: cell_color}; // top right
+				next_gen[length_y - 1 - y][length_x - 1 -x] = <Cell>{x_pos: length_x - 1 - x, y_pos: length_y - 1 - y, alive: is_alive, color: cell_color}; // bottom right
+				next_gen[length_y - 1 - y][x] = <Cell>{x_pos: x, y_pos: length_y - 1 - y, alive: is_alive, color: cell_color}; // bottom left
 			}
 		}
 		return next_gen;

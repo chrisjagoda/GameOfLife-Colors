@@ -9,7 +9,7 @@ export interface Cell {
 	x_pos: number;
 	y_pos: number;
 	alive: boolean;
-	color: RGBA;
+	color: RGBa;
 }
 
 /**
@@ -19,7 +19,7 @@ export interface Cell {
  * @param {number} b the blue value (0 - 255)
  * @param {number} a the alpha value (0 - 1)
  */
-export interface RGBA {
+export interface RGBa {
 	r: number;
 	g: number;
 	b: number;

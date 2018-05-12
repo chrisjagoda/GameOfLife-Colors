@@ -1,5 +1,6 @@
 import { GameOfLife } from './GameOfLife';
 import { Colors } from './types';
+import { GameDisplay } from './GameDisplay';
 
 function genCells(cell_size_x: number, cell_size_y: number, canvas_width?: number, canvas_height?: number, frequency?: number): number[][] {
   let width: number = canvas_width ||
@@ -24,21 +25,17 @@ function genCells(cell_size_x: number, cell_size_y: number, canvas_width?: numbe
   return cells;
 }
 
-document.getElementById("start").addEventListener("click", e => createNewGame());
-document.getElementById("red").addEventListener("change", e => toggleColor("red"));
-document.getElementById("green").addEventListener("change", e => toggleColor("green"));
-document.getElementById("blue").addEventListener("change", e => toggleColor("blue"));
-document.getElementById("evolve").addEventListener("click", e => toggleEvolve());
-
-let cell_width: number = 3;
-let cell_height: number = 3;
-let canvas_width: number = 400;
-let canvas_height: number = 400;
+let cell_width: number = 4;
+let cell_height: number = 4;
+let canvas_width: number = 500;
+let canvas_height: number = 500;
 let frequency: number = 0.1;
 let colors: Colors = <Colors>{red: true, green: true, blue: true};
+let intensity = 0.2;
 let evolved: boolean = false;
 
 let cells: number[][];
+let display: GameDisplay;
 let game: GameOfLife;
 
 function createNewGame() {
@@ -46,7 +43,8 @@ function createNewGame() {
     clearInterval(game.interval);
   }
   cells = genCells(cell_width, cell_height, canvas_width, canvas_height, frequency);
-  game = new GameOfLife(cells, cell_width, cell_height, "life", colors, evolved);
+  display = new GameDisplay("life", cells.length, cells[0].length, cell_width, cell_height, intensity);
+  game = new GameOfLife(display, cells, cell_width, cell_height, colors, evolved);
   game.interval = setInterval(function () { game.step(); }, 100);
 }
 
@@ -55,7 +53,21 @@ function toggleColor(color: string) {
 }
 
 function toggleEvolve() {
+  evolved = !evolved;
   game.evolved = !game.evolved;
 }
+
+function updateIntensity(value: string) {
+  intensity = Number(value);
+  display.intensity = intensity;
+}
+
+document.getElementById("start").addEventListener("click", createNewGame);
+document.getElementById("red").addEventListener("change", event => toggleColor("red"));
+document.getElementById("green").addEventListener("change", event => toggleColor("green"));
+document.getElementById("blue").addEventListener("change", event => toggleColor("blue"));
+var range: HTMLInputElement = document.getElementById("intensity") as HTMLInputElement;
+range.addEventListener("input", event => updateIntensity(range.value));
+document.getElementById("evolve").addEventListener("click", toggleEvolve);
 
 createNewGame();
