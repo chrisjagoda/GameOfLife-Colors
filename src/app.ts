@@ -39,8 +39,8 @@ var GameControls = function() {
   }
 
   function genCells(cell_size_x: number, cell_size_y: number, canvas_width?: number, canvas_height?: number, frequency?: number): number[][] {
-    let width: number = getMaxWidth();
-    let height: number =  getMaxHeight();
+    let width: number = canvas_width || getMaxWidth();
+    let height: number =  canvas_height || getMaxHeight();
     let num_cells_x: number = Math.floor(width/cell_size_x);
     let num_cells_y: number = Math.floor(height/cell_size_y);
     let cells: number[][] = [];
