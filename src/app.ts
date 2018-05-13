@@ -20,25 +20,27 @@ var GameControls = function() {
   let display: GameDisplay;
   let game: GameOfLife;
 
-  function getMaxCanvasSize(): number {
-    let height = window.innerHeight ||
+  function getMaxWidth(): number {
+    return window.innerWidth ||
+    document.documentElement.clientWidth ||
+    document.body.clientWidth;
+  }
+
+  function getMaxHeight(): number {
+    return window.innerHeight ||
       document.documentElement.clientHeight ||
       document.body.clientHeight;
-    let width = window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth;
-    return (height < width) ? height: width;
+  }
+
+  function getMaxCanvasSize(): number {
+    let width = getMaxWidth();
+    let height = getMaxHeight();
+    return (width < height) ? width: height;
   }
 
   function genCells(cell_size_x: number, cell_size_y: number, canvas_width?: number, canvas_height?: number, frequency?: number): number[][] {
-    let width: number = canvas_width ||
-                        window.innerWidth ||
-                        document.documentElement.clientWidth ||
-                        document.body.clientWidth;
-    let height: number =  canvas_height ||
-                          window.innerHeight ||
-                          document.documentElement.clientHeight ||
-                          document.body.clientHeight;
+    let width: number = getMaxWidth();
+    let height: number =  getMaxHeight();
     let num_cells_x: number = Math.floor(width/cell_size_x);
     let num_cells_y: number = Math.floor(height/cell_size_y);
     let cells: number[][] = [];
