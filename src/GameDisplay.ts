@@ -12,7 +12,7 @@ export class GameDisplay {
 	public height_pixels: number;
 	public cell_width: number;
 	public cell_height: number;
-	public intensity: number;
+	public alpha: number;
 
 	/**
 	 * Game display constructor
@@ -21,9 +21,9 @@ export class GameDisplay {
 	 * @param {number} cell_width the cell width
 	 * @param {number} cell_height the cell height
 	 * @param {string} the id of the canvas element
-	 * @param {number} the the intensity of the color left behind
+	 * @param {number} the the alpha of the color left behind
 	 */
-	constructor(canvas_id: string, num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, intensity: number) {
+	constructor(canvas_id: string, num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, alpha: number) {
 		this.canvas = <HTMLCanvasElement>document.getElementById(canvas_id);
 		this.ctx = this.canvas.getContext && this.canvas.getContext('2d');
 		this.width_pixels = num_cells_x * cell_width;
@@ -32,7 +32,7 @@ export class GameDisplay {
 		this.cell_height = cell_height;
 		this.canvas.width = this.width_pixels;
 		this.canvas.height = this.height_pixels;
-		this.intensity = intensity;
+		this.alpha = alpha;
 	}
 
 	/**
@@ -50,7 +50,7 @@ export class GameDisplay {
 		} else {
 			this.ctx.clearRect(start_x, start_y, this.cell_width, this.cell_height);
 			if (cell.color) {
-				this.ctx.fillStyle = "RGBa(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + this.intensity + ")";
+				this.ctx.fillStyle = "RGBa(" + cell.color.r + "," + cell.color.g + "," + cell.color.b + "," + this.alpha + ")";
 				this.ctx.fillRect(start_x, start_y, this.cell_width, this.cell_height);
 			}
 		}

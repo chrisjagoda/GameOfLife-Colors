@@ -1,73 +1,93 @@
+import { GameDisplay } from './GameDisplay';
 import { GameOfLife } from './GameOfLife';
 import { Colors } from './types';
-import { GameDisplay } from './GameDisplay';
 
-function genCells(cell_size_x: number, cell_size_y: number, canvas_width?: number, canvas_height?: number, frequency?: number): number[][] {
-  let width: number = canvas_width ||
-                      window.innerWidth ||
-                      document.documentElement.clientWidth ||
-                      document.body.clientWidth;
-  let height: number =  canvas_height ||
-                        window.innerHeight ||
-                        document.documentElement.clientHeight ||
-                        document.body.clientHeight;
-  let num_cells_x: number = Math.floor(width/cell_size_x);
-  let num_cells_y: number = Math.floor(height/cell_size_y);
-  let cells: number[][] = [];
-  let live_frequency = frequency || .10; // default 1 in 10 alive
-  // create cells, 0 - dead, 1 - alive
-  for (let i = 0; i < num_cells_y; i++) {
-    cells.push([]);
-    for (let j = 0; j < num_cells_x; j++) {
-      cells[i].push((Math.random() <= live_frequency) ? 1: 0);
-    }      
+import { GUI } from 'dat.gui';
+
+
+var GameControls = function() {
+  this.cell_width = 4;
+  this.canvas_width = 256;
+  this.frequency = 0.1;
+  this.red = true;
+  this.green = true;
+  this.blue = true;
+  this.alpha = 0.2;
+  this.evolve = false;
+
+  let cells: number[][];  
+  let colors = <Colors>{red: true, green: true, blue: true};
+  let display: GameDisplay;
+  let game: GameOfLife;
+
+  function genCells(cell_size_x: number, cell_size_y: number, canvas_width?: number, canvas_height?: number, frequency?: number): number[][] {
+    let width: number = canvas_width ||
+                        window.innerWidth ||
+                        document.documentElement.clientWidth ||
+                        document.body.clientWidth;
+    let height: number =  canvas_height ||
+                          window.innerHeight ||
+                          document.documentElement.clientHeight ||
+                          document.body.clientHeight;
+    let num_cells_x: number = Math.floor(width/cell_size_x);
+    let num_cells_y: number = Math.floor(height/cell_size_y);
+    let cells: number[][] = [];
+    let live_frequency = frequency || .10; // default 1 in 10 alive
+    // create cells, 0 - dead, 1 - alive
+    for (let i = 0; i < num_cells_y; i++) {
+      cells.push([]);
+      for (let j = 0; j < num_cells_x; j++) {
+        cells[i].push((Math.random() <= live_frequency) ? 1: 0);
+      }      
+    }
+    return cells;
   }
-  return cells;
-}
 
-let cell_width: number = 4;
-let cell_height: number = 4;
-let canvas_width: number = 500;
-let canvas_height: number = 500;
-let frequency: number = 0.1;
-let colors: Colors = <Colors>{red: true, green: true, blue: true};
-let intensity = 0.2;
-let evolved: boolean = false;
-
-let cells: number[][];
-let display: GameDisplay;
-let game: GameOfLife;
-
-function createNewGame() {
-  if (game) {
-    clearInterval(game.interval);
+  this.createNewGame = function() {
+    if (game) {
+      clearInterval(game.interval);
+    }
+    cells = genCells(this.cell_width, this.cell_width, this.canvas_width, this.canvas_width, this.frequency);
+    display = new GameDisplay("life", cells.length, cells[0].length, this.cell_width, this.cell_width, this.alpha);
+    game = new GameOfLife(display, cells, this.cell_width, this.cell_width, colors, this.evolve);
+    game.interval = setInterval(function () { game.step(); }, 100);
   }
-  cells = genCells(cell_width, cell_height, canvas_width, canvas_height, frequency);
-  display = new GameDisplay("life", cells.length, cells[0].length, cell_width, cell_height, intensity);
-  game = new GameOfLife(display, cells, cell_width, cell_height, colors, evolved);
-  game.interval = setInterval(function () { game.step(); }, 100);
+
+  this.pauseGame = function() {
+    if (game.interval == 0)
+      game.interval = setInterval(function () { game.step(); }, 100);
+    else {
+      clearInterval(game.interval);
+      game.interval = 0;
+    }
+  }
+
+  this.toggleColor = function(color: string) {
+    colors[color] = !colors[color];
+  }
+
+  this.toggleEvolve = function() {
+    game.evolve = this.evolve;
+  }
+
+  this.updateAlpha = function(value: string) {
+    display.alpha = Number(this.alpha);
+  }
+
+  this.createNewGame();
 }
 
-function toggleColor(color: string) {
-  colors[color] = !colors[color];
+window.onload = function() {
+  var gameControls = new GameControls();
+  var gui = new GUI();
+  gui.add(gameControls, 'createNewGame');
+  gui.add(gameControls, 'pauseGame');
+  gui.add(gameControls, 'cell_width', 0, 10).step(1);
+  gui.add(gameControls, 'canvas_width', 100, 800).step(1);
+  gui.add(gameControls, 'frequency', 0, 1);
+  gui.add(gameControls, 'red').onChange(function() {gameControls.toggleColor('red')});
+  gui.add(gameControls, 'green').onChange(function() {gameControls.toggleColor('green')});
+  gui.add(gameControls, 'blue').onChange(function() {gameControls.toggleColor('blue')});
+  gui.add(gameControls, 'evolve').onChange(function() {gameControls.toggleEvolve()});
+  gui.add(gameControls, 'alpha', 0, 1).onChange(function() {gameControls.updateAlpha()});
 }
-
-function toggleEvolve() {
-  evolved = !evolved;
-  game.evolved = !game.evolved;
-}
-
-function updateIntensity(value: string) {
-  intensity = Number(value);
-  display.intensity = intensity;
-}
-
-document.getElementById("start").addEventListener("click", createNewGame);
-document.getElementById("red").addEventListener("change", event => toggleColor("red"));
-document.getElementById("green").addEventListener("change", event => toggleColor("green"));
-document.getElementById("blue").addEventListener("change", event => toggleColor("blue"));
-var range: HTMLInputElement = document.getElementById("intensity") as HTMLInputElement;
-range.addEventListener("input", event => updateIntensity(range.value));
-document.getElementById("evolve").addEventListener("click", toggleEvolve);
-
-createNewGame();

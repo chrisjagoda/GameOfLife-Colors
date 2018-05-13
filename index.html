@@ -8,34 +8,13 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.1/require.min.js"></script>
 </head>
 <body>
-
+    
     <div class="game-container">
         <canvas id="life"></canvas>
     </div>
-    <div class="colors">
-        <button id="start" type="button">Start</button>
-        <label>
-            Red
-            <input id="red" type="checkbox" checked>
-        </label>
-         <label>
-            Green
-            <input id="green" type="checkbox" checked>
-        </label>
-        <label>
-            Blue
-            <input id="blue" type="checkbox" checked>
-        </label>
-        <button id="evolve" type="button">Evolve</button>
-        <label>
-            Intensity
-            <input type="range" min="0" max="1" value="0.1" step="0.01" id="intensity">
-        </div>    
-    </div>
 
     <script>
-        require(["bundle"], function(app) {
-        });
+        require(["bundle"], function(app) {});
     </script>
 
 </body>

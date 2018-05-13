@@ -1,17 +1,19 @@
 {
-    "name": "GameOfLife-Colors",
-    "version": "1.0.0",
-    "description": "Conway's Game of Life with a a colorful twist",
-    "dependencies": {
-        "http-server": "^0.8.0"
-    },
-    "devDependencies": {
-        "typescript": "^2.8.3"
-    },
-    "scripts": {
-        "tsc": "node node_modules/typescript/lib/tsc.js",
-        "browserify": "browserify src/app.js -o bundle.js -s app",
-        "listen": "node node_modules/http-server/bin/http-server",
-        "all": "npm run tsc &&  npm run browserify && npm run listen"
-    }
+  "name": "GameOfLife-Colors",
+  "version": "1.0.0",
+  "description": "Conway's Game of Life with a a colorful twist",
+  "dependencies": {
+    "@types/dat.gui": "^0.7.0",
+    "dat.gui": "^0.7.2",
+    "http-server": "^0.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^2.8.3"
+  },
+  "scripts": {
+    "tsc": "node node_modules/typescript/lib/tsc.js",
+    "browserify": "browserify src/app.js -o bundle.js -s app",
+    "listen": "node node_modules/http-server/bin/http-server",
+    "all": "npm run tsc &&  npm run browserify && npm run listen"
+  }
 }

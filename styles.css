@@ -5,4 +5,5 @@ body {
 
 .game-container {
 	text-align: center;
+	resize: both;
 }

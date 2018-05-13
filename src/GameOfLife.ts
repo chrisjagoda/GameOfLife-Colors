@@ -13,7 +13,7 @@ export class GameOfLife {
 	private colors: Colors;
 	private cell_array: Cell[][];
 	private display: GameDisplay;
-	public evolved: boolean;
+	public evolve: boolean;
 	public interval: number;
 
 	/**
@@ -24,14 +24,14 @@ export class GameOfLife {
 	 * @param {number} cell_height the cell height
 	 * @param {string} canvas_id the id of the canvas element
 	 */
-	constructor(display: GameDisplay, init_cells: number[][], cell_width?: number, cell_height?: number, colors?: Colors, evolved?: boolean) {
+	constructor(display: GameDisplay, init_cells: number[][], cell_width?: number, cell_height?: number, colors?: Colors, evolve?: boolean) {
 		this.num_cells_y = init_cells ? init_cells.length: 0;
 		this.num_cells_x = this.num_cells_y > 0 ? init_cells[0].length: 0;
 		this.cell_width = cell_width || 5;
 		this.cell_height = cell_height || 5;
 		this.colors = colors || <Colors>{red: true, green: true, blue: true};
 		
-		this.evolved = evolved || false;
+		this.evolve = evolve || false;
 		this.cell_array = [];
 		this.display = display;
 		this.interval = 0; // initial interval set to 0. Set when setInterval called on step
@@ -107,18 +107,18 @@ export class GameOfLife {
 					}
 				});
 
-				// variant alg with evolved set to true
+				// variant alg with evolve set to true
 				let is_alive: boolean = cell.alive;
 				if (cell.alive) {
 					if (alive_count < 2 || alive_count > 3) {
 						// new state: dead, overpopulation/underpopulation
-						if (this.evolved) {
+						if (this.evolve) {
 							cell.alive = false;
 						}
 						is_alive = false;
 					} else if (alive_count === 2 || alive_count === 3) {
 						// lives on to next generation
-						if (this.evolved) {
+						if (this.evolve) {
 							cell.alive = true;
 							if (!cell.color) {
 								cell.color = neighbor_colors[Math.floor(Math.random()*neighbor_colors.length)];;
@@ -129,7 +129,7 @@ export class GameOfLife {
 				} else {
 					if (alive_count === 3) {
 						// new state: live, reproduction
-						if (this.evolved) {
+						if (this.evolve) {
 							cell.alive = true;
 							if (!cell.color) {
 								cell.color = neighbor_colors[Math.floor(Math.random()*neighbor_colors.length)];;
@@ -146,7 +146,7 @@ export class GameOfLife {
 						neighbor_colors.push(cell.color);
 					}
 					parent_colors = neighbor_colors.splice(Math.floor(Math.random()*neighbor_colors.length), 1);
-					if (neighbor_colors.length > 0) { // fix for evolved - allows single parent color
+					if (neighbor_colors.length > 0) { // fix for evolve - allows single parent color
 						parent_colors.push(neighbor_colors[Math.floor(Math.random()*neighbor_colors.length)]);
 					}
 					child_color = parent_colors[Math.floor(Math.random()*parent_colors.length)];
