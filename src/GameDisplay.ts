@@ -16,12 +16,12 @@ export class GameDisplay {
 
 	/**
 	 * Game display constructor
+	 * @param {string} canvas_id the id of the canvas element
 	 * @param {number} num_cells_x the number of cells along the x axis
 	 * @param {number} num_cells_y the number of cells along the y axis
 	 * @param {number} cell_width the cell width
 	 * @param {number} cell_height the cell height
-	 * @param {string} the id of the canvas element
-	 * @param {number} the the alpha of the color left behind
+	 * @param {number} alpha the alpha of the color left behind
 	 */
 	constructor(canvas_id: string, num_cells_x: number, num_cells_y: number, cell_width: number, cell_height: number, alpha: number) {
 		this.canvas = <HTMLCanvasElement>document.getElementById(canvas_id);

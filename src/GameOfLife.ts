@@ -18,11 +18,12 @@ export class GameOfLife {
 
 	/**
 	 * Game of Life object constructor
+	 * @param {GameDisplay} display the game display object
 	 * @param {number[][]} init_cells the initial array of cells
-	 * @param {number} num_cells_y the number of cells along the y axis
 	 * @param {number} cell_width the cell width
 	 * @param {number} cell_height the cell height
-	 * @param {string} canvas_id the id of the canvas element
+	 * @param {Colors} colors the available colors of the cells
+	 * @param {boolean} evolve the alternate evolve algorithm
 	 */
 	constructor(display: GameDisplay, init_cells: number[][], cell_width?: number, cell_height?: number, colors?: Colors, evolve?: boolean) {
 		this.num_cells_y = init_cells ? init_cells.length: 0;

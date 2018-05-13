@@ -1,9 +1,7 @@
 import { GameDisplay } from './GameDisplay';
 import { GameOfLife } from './GameOfLife';
 import { Colors } from './types';
-
 import { GUI } from 'dat.gui';
-
 
 var GameControls = function() {
   this.cell_width = 4;
