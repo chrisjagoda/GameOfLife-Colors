@@ -7,18 +7,28 @@ import { GUI } from 'dat.gui';
 
 var GameControls = function() {
   this.cell_width = 4;
-  this.canvas_width = 256;
-  this.frequency = 0.1;
+  this.canvas_width = getMaxCanvasSize();
+  this.frequency = 0.25;
   this.red = true;
   this.green = true;
   this.blue = true;
-  this.alpha = 0.2;
+  this.alpha = 0.5;
   this.evolve = false;
 
   let cells: number[][];  
   let colors = <Colors>{red: true, green: true, blue: true};
   let display: GameDisplay;
   let game: GameOfLife;
+
+  function getMaxCanvasSize(): number {
+    let height = window.innerHeight ||
+      document.documentElement.clientHeight ||
+      document.body.clientHeight;
+    let width = window.innerWidth ||
+      document.documentElement.clientWidth ||
+      document.body.clientWidth;
+    return (height < width) ? height: width;
+  }
 
   function genCells(cell_size_x: number, cell_size_y: number, canvas_width?: number, canvas_height?: number, frequency?: number): number[][] {
     let width: number = canvas_width ||
