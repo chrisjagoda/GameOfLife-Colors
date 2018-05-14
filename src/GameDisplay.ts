@@ -37,7 +37,7 @@ export class GameDisplay {
 
 	/**
 	 * Draws or clears a single cell
-	 * @param {Cell} cell the cell to be drawn
+	 * @param {Cell} cell the cell to be draw
 	 */
 	public drawCell(cell: Cell): void {
 		// find start point (top left)

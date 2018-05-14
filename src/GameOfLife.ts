@@ -70,8 +70,8 @@ export abstract class GameOfLife {
 		var x: number;
 		var y: number;
 
-		for (y = 0; y < length_y; y++) {
-			next_gen[y] = new Array(length_x); // Init new rows
+		for (y = 0; y < this.num_cells_y; y++) {
+			next_gen[y] = new Array(this.num_cells_x); // Init new rows
 		}
 
 		// each row
@@ -153,8 +153,7 @@ export abstract class GameOfLife {
 					child_color = parent_colors[Math.floor(Math.random()*parent_colors.length)];
 				}
 				let cell_color: RGBa = (is_alive) ? child_color: cell.color;
-				this.createNewCell(next_gen, x, y, cell_color, is_alive);
-				
+				this.createNewCell(next_gen, x, y, cell_color, is_alive);				
 			}
 		}
 		return next_gen;
@@ -163,7 +162,7 @@ export abstract class GameOfLife {
 	/**
 	 * Create new cell based on color from neighbors dead cell color null
 	 */
-	protected abstract createNewCell(next_gen: Cell[][], x: number, y: number, cell_color: RGBa, is_alive: boolean): void;
+	abstract createNewCell(next_gen: Cell[][], x: number, y: number, cell_color: RGBa, is_alive: boolean): void;
 
 	/**
 	 * Advances cells one generation and updates board
@@ -187,11 +186,11 @@ export class GameOfLifeBase extends GameOfLife {
 	 */
 	constructor(display: GameDisplay, init_cells: number[][], cell_width?: number, cell_height?: number, colors?: Colors, evolve?: boolean) {
 		super(display, init_cells, cell_width, cell_height, colors, evolve);
-		this.game_width = init_cells.length - 1;
-		this.game_height = init_cells.length - 1;
+		this.game_width = init_cells.length;
+		this.game_height = init_cells.length;
 	}
 
-	protected createNewCell(next_gen: Cell[][], x: number, y: number, cell_color: RGBa, is_alive: boolean) {
+	createNewCell(next_gen: Cell[][], x: number, y: number, cell_color: RGBa, is_alive: boolean) {
 		next_gen[y][x] = <Cell>{x_pos: x, y_pos: y, alive: is_alive, color: cell_color}; // top left
 	}
 }
@@ -209,18 +208,22 @@ export class GameOfLifeMandela1 extends GameOfLife {
 	 */
 	constructor(display: GameDisplay, init_cells: number[][], cell_width?: number, cell_height?: number, colors?: Colors, evolve?: boolean) {
 		super(display, init_cells, cell_width, cell_height, colors, evolve);
-		this.game_width = Math.floor(init_cells.length/2) - 1;
-		this.game_height = Math.floor(init_cells.length/2) - 1;
+		this.game_width = Math.ceil(init_cells.length/2);
+		this.game_height = Math.ceil(init_cells.length/2);
 	}
 
-	protected createNewCell(next_gen: Cell[][], x: number, y: number, cell_color: RGBa, is_alive: boolean) {
-		let length_x: number = this.game_width;
-		let length_y: number = this.game_height;
+	createNewCell(next_gen: Cell[][], x: number, y: number, cell_color: RGBa, is_alive: boolean) {
+		let length_x: number = this.num_cells_x - 1;
+		let length_y: number = this.num_cells_y - 1;
 		
-		next_gen[y][x] = <Cell>{x_pos: x, y_pos: y, alive: is_alive, color: cell_color}; // top left
-		next_gen[y][length_x - x] = <Cell>{x_pos: length_x - x, y_pos: y, alive: is_alive, color: cell_color}; // top right
+		next_gen[y][x] = <Cell>{x_pos: x, y_pos: y, alive: is_alive, color: cell_color}; // top left - bottom left
+		next_gen[x][y] = <Cell>{x_pos: y, y_pos: x, alive: is_alive, color: cell_color}; // top left - top right
+		next_gen[y][length_x - x] = <Cell>{x_pos: length_x - x, y_pos: y, alive: is_alive, color: cell_color}; // top right - top left
+		next_gen[length_x - x][y] = <Cell>{x_pos: y, y_pos: length_x - x, alive: is_alive, color: cell_color}; // top right - bottom right
 		next_gen[length_y - y][length_x - x] = <Cell>{x_pos: length_x - x, y_pos: length_y - y, alive: is_alive, color: cell_color}; // bottom right
+		next_gen[length_x - x][length_y - y] = <Cell>{x_pos: length_y - y, y_pos: length_x - x, alive: is_alive, color: cell_color}; // bottom right
 		next_gen[length_y - y][x] = <Cell>{x_pos: x, y_pos: length_y - y, alive: is_alive, color: cell_color}; // bottom left
+		next_gen[x][length_y - y] = <Cell>{x_pos: length_y - y, y_pos: x, alive: is_alive, color: cell_color}; // bottom left
 	}
 }
 
@@ -234,19 +237,19 @@ export class GameOfLifeMandela2 extends GameOfLife {
 	 * @param {Colors} colors the available colors of the cells
 	 * @param {boolean} evolve the alternate evolve algorithm
 	 */
-	constructor(display: GameDisplay, init_cells: number[][], cell_width?: number, cell_height?: number, game_width?: number, game_height?: number, colors?: Colors, evolve?: boolean) {
+	constructor(display: GameDisplay, init_cells: number[][], cell_width?: number, cell_height?: number, colors?: Colors, evolve?: boolean) {
 		super(display, init_cells, cell_width, cell_height, colors, evolve);
-		this.game_width = Math.floor(init_cells.length/2) - 1;
-		this.game_height = Math.floor(init_cells.length/2) - 1;
+		this.game_width = Math.ceil(init_cells.length/2);
+		this.game_height = Math.ceil(init_cells.length/2);
 	}
 
-	protected createNewCell(next_gen: Cell[][], x: number, y: number, cell_color: RGBa, is_alive: boolean) {
+	createNewCell(next_gen: Cell[][], x: number, y: number, cell_color: RGBa, is_alive: boolean) {
 		let length_x: number = this.num_cells_x - 1;
 		let length_y: number = this.num_cells_y - 1;
 		
 		next_gen[y][x] = <Cell>{x_pos: x, y_pos: y, alive: is_alive, color: cell_color}; // top left
 		next_gen[y][length_x - x] = <Cell>{x_pos: length_x - x, y_pos: y, alive: is_alive, color: cell_color}; // top right
-		next_gen[length_y - y][length_x -x] = <Cell>{x_pos: length_x - x, y_pos: length_y - y, alive: is_alive, color: cell_color}; // bottom right
+		next_gen[length_y - y][length_x - x] = <Cell>{x_pos: length_x - x, y_pos: length_y - y, alive: is_alive, color: cell_color}; // bottom right
 		next_gen[length_y - y][x] = <Cell>{x_pos: x, y_pos: length_y - y, alive: is_alive, color: cell_color}; // bottom left
 	}
 }

@@ -1,9 +1,10 @@
 import { GameDisplay } from './GameDisplay';
-import { GameOfLife } from './GameOfLife';
+import { GameOfLife, GameOfLifeBase, GameOfLifeMandela1, GameOfLifeMandela2 } from './GameOfLife';
 import { Colors } from './types';
 import { GUI } from 'dat.gui';
 
 var GameControls = function() {
+  this.selected = 'base';
   this.cell_width = 4;
   this.canvas_width = getMaxCanvasSize();
   this.frequency = 0.25;
@@ -42,7 +43,7 @@ var GameControls = function() {
     let num_cells_x: number = Math.floor(width/cell_size_x);
     let num_cells_y: number = Math.floor(height/cell_size_y);
     let cells: number[][] = [];
-    let live_frequency = frequency || .10; // default 1 in 10 alive
+    let live_frequency = frequency; // default 1 in 10 alive
     // create cells, 0 - dead, 1 - alive
     for (let i = 0; i < num_cells_y; i++) {
       cells.push([]);
@@ -53,13 +54,30 @@ var GameControls = function() {
     return cells;
   }
 
+  this.selectType = function(value: string) {
+    this.selected = value;
+  }
+
   this.createNewGame = function() {
     if (game) {
       clearInterval(game.interval);
+      game = null;
     }
     cells = genCells(this.cell_width, this.cell_width, this.canvas_width, this.canvas_width, this.frequency);
     display = new GameDisplay("life", cells.length, cells[0].length, this.cell_width, this.cell_width, this.alpha);
-    game = new GameOfLife(display, cells, this.cell_width, this.cell_width, colors, this.evolve);
+    switch(this.selected) {
+      case 'base':
+        game = new GameOfLifeBase(display, cells, this.cell_width, this.cell_width, colors, this.evolve);
+        break;
+      case 'mandela1':
+        game = new GameOfLifeMandela1(display, cells, this.cell_width, this.cell_width, colors, this.evolve);
+        break;
+      case 'mandela2':
+        game = new GameOfLifeMandela2(display, cells, this.cell_width, this.cell_width, colors, this.evolve);
+        break;
+      default:
+        game = new GameOfLifeBase(display, cells, this.cell_width, this.cell_width, colors, this.evolve);
+    }
     game.interval = setInterval(function () { game.step(); }, 100);
   }
 
@@ -90,10 +108,11 @@ var GameControls = function() {
 window.onload = function() {
   var gameControls = new GameControls();
   var gui = new GUI();
+  gui.add(gameControls, 'selected', ['base', 'mandela1', 'mandela2']).onChange(function(value) {gameControls.selectType(value) });
   gui.add(gameControls, 'createNewGame');
   gui.add(gameControls, 'pauseGame');
-  gui.add(gameControls, 'cell_width', 0, 10).step(1);
-  gui.add(gameControls, 'canvas_width', 100, 800).step(1);
+  gui.add(gameControls, 'cell_width', 1, 10).step(1);
+  gui.add(gameControls, 'canvas_width', 100, 800).step(4);
   gui.add(gameControls, 'frequency', 0, 1);
   gui.add(gameControls, 'red').onChange(function() {gameControls.toggleColor('red')});
   gui.add(gameControls, 'green').onChange(function() {gameControls.toggleColor('green')});
